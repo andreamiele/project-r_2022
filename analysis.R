@@ -2,6 +2,12 @@
 #====================================================================================================================================================================================
 # Imports
 
+library(readr)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(reshape2)
+
 netflix_titles <- read_csv("netflix_titles.csv", 
                            col_types = cols(date_added = col_date(format = "%B %d, %Y")))
 
@@ -159,22 +165,118 @@ table(netflix_movie$rating)
 
 barplot(table(netflix_movie$rating), main="Répartition des films sur Netflix en fonction des ratings")
 
+#Audience visée des films
+
+autre <- netflix_movie
+autre$rating <- gsub("TV-PG","Older kids",as.character(autre$rating))
+autre$rating <- gsub("TV-Y7-FV","Older kids",as.character(autre$rating))
+autre$rating <- gsub("TV-Y7","Older kids",as.character(autre$rating))
+
+autre$rating <- gsub("TV-MA","Adults",as.character(autre$rating))
+autre$rating <- gsub("NR","Adults",as.character(autre$rating))
+
+autre$rating <- gsub("UR","Adults",as.character(autre$rating))
+autre$rating <- gsub("NC-17","Adults",as.character(autre$rating))
+autre$rating <- gsub("TV-14","Teens",as.character(autre$rating))
+autre$rating <- gsub("PG-13","Teens",as.character(autre$rating))
+autre$rating <- gsub("TV-Y","Kids",as.character(autre$rating))
+autre$rating <- gsub("TV-G","Kids",as.character(autre$rating))
+
+autre$rating <- gsub("PG","Older kids",as.character(autre$rating))
+autre$rating <- gsub("G","Kids",as.character(autre$rating))
+autre$rating <- gsub("R","Adults",as.character(autre$rating))
+
+barplot(main="Audience Visée des films selon la tranche d'âge",xlab="Tranche d'âge", ylab="Nombre de films", tail(sort(table(autre$rating),decreasing=FALSE),n=4))
+
+#Audience visée des séries
+
+autreSerie <- netflix_serie
+autreSerie$rating <- gsub("TV-PG","Older kids",as.character(autreSerie$rating))
+autreSerie$rating <- gsub("TV-Y7-FV","Older kids",as.character(autreSerie$rating))
+autreSerie$rating <- gsub("TV-Y7","Older kids",as.character(autreSerie$rating))
+
+autreSerie$rating <- gsub("TV-MA","Adults",as.character(autreSerie$rating))
+autreSerie$rating <- gsub("NR","Adults",as.character(autreSerie$rating))
+
+autreSerie$rating <- gsub("UR","Adults",as.character(autreSerie$rating))
+autreSerie$rating <- gsub("NC-17","Adults",as.character(autreSerie$rating))
+autreSerie$rating <- gsub("TV-14","Teens",as.character(autreSerie$rating))
+autreSerie$rating <- gsub("PG-13","Teens",as.character(autreSerie$rating))
+autreSerie$rating <- gsub("TV-Y","Kids",as.character(autreSerie$rating))
+autreSerie$rating <- gsub("TV-G","Kids",as.character(autreSerie$rating))
+
+autreSerie$rating <- gsub("PG","Older kids",as.character(autreSerie$rating))
+autreSerie$rating <- gsub("G","Kids",as.character(autreSerie$rating))
+autreSerie$rating <- gsub("R","Adults",as.character(autreSerie$rating))
+
+barplot(main="Audience Visée des séries selon la tranche d'âge",xlab="Tranche d'âge", ylab="Nombre de séries", tail(sort(table(autreSerie$rating),decreasing=FALSE),n=4))
 
 
 # Voir les pays avec le plus de films.
 
 
-
-library(dplyr)
-
 x <- netflix_titles
-library(stringr)
+
 for (i in 1:length(netflix_titles$country))
 {
   y <- str_split(netflix_titles$country[i],",", simplify = TRUE)
   netflix_titles$country[i] <- y[1,1]
 }
 
-b = sort(table(netflix_titles$country),ascending=true)
+barplot(main="TOP 10 des pays sur Netflix",ylab="Nombre de pays",xlab="Pays de production",head(sort(table(netflix_titles$country),decreasing=TRUE),n=10))
 
-barplot(tail(sort(table(netflix_titles$country),ascending=true),n=10))
+# Test de Shapiro
+
+
+# Trier les Na pour les mettre en bas du tableau, et on les supprime
+ShapiroTest <- netflix_movie[order(netflix_movie$duration),]
+ShapiroTest <- head(ShapiroTest,-3)
+
+
+shuffled_data  =  ShapiroTest[sample(1:nrow(ShapiroTest)),]
+shuffled_data <- head(shuffled_data,-1200)
+barplot(table(shuffled_data$duration)) 
+# On s'attend à une loi distribuée normalement au vu du graphique
+shapiro.test(shuffled_data$duration)
+# --- 
+# W = 1, p-value <2e-16
+# Non symétrique distributition qui s'écarte trop de la moyenne à gauche --> Distribution non normale
+
+
+
+
+#====================================================================================================================================================================================
+#====================================================================================================================================================================================
+# ANALYSE Amazon Prime
+
+# Transformation des durées des films en nombre (en enlevant le " min")
+
+amazon_movie <- subset(amazon_prime_titles,type =="Movie")
+
+amazon_movie$duration <- gsub(" min","",as.character(amazon_movie$duration))
+amazon_movie$duration
+amazon_movie$duration <- as.double(amazon_movie$duration)
+summary(amazon_movie$duration)
+
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#   0      75      91      91      106    601
+
+#-----------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------
+
+# Test de Shapiro Amazon
+barplot(table(amazon_movie$duration))
+shuffled_data2  =  amazon_movie[sample(1:nrow(amazon_movie)),]
+shuffled_data2 <- head(shuffled_data2,-3000)
+shapiro.test(shuffled_data2$duration)
+# La durée des films sur amazon ne peut suivre une loi normale, rejet de l'hypothèse
+summary(amazon_movie$duration)
+summary(netflix_movie$duration)
+
+# Test de Wilcoxon #Trouver les raisons
+wilcox.test(amazon_movie$duration,netflix_movie$duration)
+# W = 2e+07, p-value <2e-16
+
+var.test(amazon_movie$duration,netflix_movie$duration,alternative = "greater")
+
+
