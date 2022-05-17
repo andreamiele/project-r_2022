@@ -2,15 +2,14 @@
 #====================================================================================================================================================================================
 # Imports
 
+netflix_titles <- read_csv("netflix_titles.csv", 
+                           col_types = cols(date_added = col_date(format = "%B %d, %Y")))
 
-netflix_titles <- read_csv("netflix_titles.csv", stringsAsFactors = FALSE)
-View(netflix_titles)
+disney_plus_titles <- read_csv("disney_plus_titles.csv",
+                               col_types = cols(date_added = col_date(format = "%B %d, %Y")))
 
-disney_plus_titles <- read_csv("disney_plus_titles.csv")
-View(disney_plus_titles)
-
-amazon_prime_titles <- read_csv("amazon_prime_titles.csv")
-View(amazon_prime_titles)
+amazon_prime_titles <- read_csv("amazon_prime_titles.csv",
+                                col_types = cols(date_added = col_date(format = "%B %d, %Y")))
 
 #====================================================================================================================================================================================
 #====================================================================================================================================================================================
@@ -143,6 +142,8 @@ legend(2013,2000, legend=c( "Total","Films", "Série"),lwd=10,
 
 hist(table(netflix_serie$rating))
 netflix_serie$rating <- gsub("84 min","",as.character(netflix_serie$rating))
+netflix_serie$rating <- gsub("74 min","",as.character(netflix_serie$rating))
+netflix_serie$rating <- gsub("84 min","",as.character(netflix_serie$rating))
 
 table(netflix_serie$rating)
 
@@ -151,7 +152,29 @@ barplot(table(netflix_serie$rating), main="Répartition des séries sur Netflix 
 
 hist(table(netflix_movie$rating))
 netflix_movie$rating <- gsub("66 min","",as.character(netflix_movie$rating))
+netflix_movie$rating <- gsub("84 min","",as.character(netflix_movie$rating))
+netflix_movie$rating <- gsub("74 min","",as.character(netflix_movie$rating))
 
 table(netflix_movie$rating)
 
 barplot(table(netflix_movie$rating), main="Répartition des films sur Netflix en fonction des ratings")
+
+
+
+# Voir les pays avec le plus de films.
+
+
+
+library(dplyr)
+
+x <- netflix_titles
+library(stringr)
+for (i in 1:length(netflix_titles$country))
+{
+  y <- str_split(netflix_titles$country[i],",", simplify = TRUE)
+  netflix_titles$country[i] <- y[1,1]
+}
+
+b = sort(table(netflix_titles$country),ascending=true)
+
+barplot(tail(sort(table(netflix_titles$country),ascending=true),n=10))
