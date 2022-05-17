@@ -167,49 +167,30 @@ barplot(table(netflix_movie$rating), main="Répartition des films sur Netflix en
 
 #Audience visée des films
 
-autre <- netflix_movie
-autre$rating <- gsub("TV-PG","Older kids",as.character(autre$rating))
-autre$rating <- gsub("TV-Y7-FV","Older kids",as.character(autre$rating))
-autre$rating <- gsub("TV-Y7","Older kids",as.character(autre$rating))
+netflixPublicCibleFilms <- netflix_movie
+netflixPublicCibleFilms$rating <- gsub("TV-14|PG-13","Teens",as.character(netflixPublicCibleFilms$rating))
+netflixPublicCibleFilms$rating <- gsub("TV-PG|PG|TV-Y7-FV|TV-Y7","Older kids",as.character(netflixPublicCibleFilms$rating))
+netflixPublicCibleFilms$rating <- gsub("TV-Y|TV-G|G","Kids",as.character(netflixPublicCibleFilms$rating))
+netflixPublicCibleFilms$rating <- gsub("TV-MA|NR|UR|NC-17|R","Adults",as.character(netflixPublicCibleFilms$rating))
 
-autre$rating <- gsub("TV-MA","Adults",as.character(autre$rating))
-autre$rating <- gsub("NR","Adults",as.character(autre$rating))
-
-autre$rating <- gsub("UR","Adults",as.character(autre$rating))
-autre$rating <- gsub("NC-17","Adults",as.character(autre$rating))
-autre$rating <- gsub("TV-14","Teens",as.character(autre$rating))
-autre$rating <- gsub("PG-13","Teens",as.character(autre$rating))
-autre$rating <- gsub("TV-Y","Kids",as.character(autre$rating))
-autre$rating <- gsub("TV-G","Kids",as.character(autre$rating))
-
-autre$rating <- gsub("PG","Older kids",as.character(autre$rating))
-autre$rating <- gsub("G","Kids",as.character(autre$rating))
-autre$rating <- gsub("R","Adults",as.character(autre$rating))
+# Catégories uniques -> dans les films proposés, netflix cherche à avoir un catalogue diversifié, ayant des catégories pour tous les types de publics 
+unique(na.omit(autre$rating))
 
 barplot(main="Audience Visée des films selon la tranche d'âge",xlab="Tranche d'âge", ylab="Nombre de films", tail(sort(table(autre$rating),decreasing=FALSE),n=4))
 
 #Audience visée des séries
 
 autreSerie <- netflix_serie
-autreSerie$rating <- gsub("TV-PG","Older kids",as.character(autreSerie$rating))
-autreSerie$rating <- gsub("TV-Y7-FV","Older kids",as.character(autreSerie$rating))
-autreSerie$rating <- gsub("TV-Y7","Older kids",as.character(autreSerie$rating))
 
-autreSerie$rating <- gsub("TV-MA","Adults",as.character(autreSerie$rating))
-autreSerie$rating <- gsub("NR","Adults",as.character(autreSerie$rating))
+autreSerie$rating <- gsub("TV-14|PG-13","Teens",as.character(autreSerie$rating))
+autreSerie$rating <- gsub("TV-PG|PG|TV-Y7-FV|TV-Y7","Older kids",as.character(autreSerie$rating))
+autreSerie$rating <- gsub("TV-Y|TV-G|G","Kids",as.character(autreSerie$rating))
+autreSerie$rating <- gsub("TV-MA|NR|UR|NC-17|R","Adults",as.character(autreSerie$rating))
 
-autreSerie$rating <- gsub("UR","Adults",as.character(autreSerie$rating))
-autreSerie$rating <- gsub("NC-17","Adults",as.character(autreSerie$rating))
-autreSerie$rating <- gsub("TV-14","Teens",as.character(autreSerie$rating))
-autreSerie$rating <- gsub("PG-13","Teens",as.character(autreSerie$rating))
-autreSerie$rating <- gsub("TV-Y","Kids",as.character(autreSerie$rating))
-autreSerie$rating <- gsub("TV-G","Kids",as.character(autreSerie$rating))
+# Catégories uniques -> dans les séries aussi, netflix cherche à avoir un catalogue diversifié
+unique(na.omit(autreSerie$rating))
 
-autreSerie$rating <- gsub("PG","Older kids",as.character(autreSerie$rating))
-autreSerie$rating <- gsub("G","Kids",as.character(autreSerie$rating))
-autreSerie$rating <- gsub("R","Adults",as.character(autreSerie$rating))
-
-barplot(main="Audience Visée des séries selon la tranche d'âge",xlab="Tranche d'âge", ylab="Nombre de séries", tail(sort(table(autreSerie$rating),decreasing=FALSE),n=4))
+barplot(main="Audience Visée des séries selon la tranche d'âge",xlab="Tranche d'âge", ylab="Nombre de séries", tail(sort(table(autreSerie$rating),decreasing=FALSE),n=4),col=c("green","yellow","orange","red"))
 
 
 # Voir les pays avec le plus de films.
@@ -240,7 +221,7 @@ barplot(table(shuffled_data$duration))
 shapiro.test(shuffled_data$duration)
 # --- 
 # W = 1, p-value <2e-16
-# Non symétrique distributition qui s'écarte trop de la moyenne à gauche --> Distribution non normale
+# Non symétrique, distribution qui s'écarte trop de la moyenne à gauche --> Distribution non normale
 
 
 
@@ -263,6 +244,30 @@ summary(amazon_movie$duration)
 
 #-----------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------
+#Audience visée des films
+amazonPublicCible <- amazon_movie
+
+amazonPublicCible$rating <- gsub("13+","Teens",as.character(amazonPublicCible$rating), fixed=TRUE)
+amazonPublicCible$rating <- gsub("16+","Older Teens",as.character(amazonPublicCible$rating), fixed=TRUE)
+amazonPublicCible$rating <- gsub("7+","Older kids",as.character(amazonPublicCible$rating),fixed=TRUE)
+amazonPublicCible$rating <- gsub("18+","Adults",as.character(amazonPublicCible$rating), fixed=TRUE)
+
+amazonPublicCible$rating <- gsub("TV-14|PG-13","Teens",as.character(amazonPublicCible$rating))
+amazonPublicCible$rating <- gsub("AGES_16_|16","Older Teens",as.character(amazonPublicCible$rating))
+amazonPublicCible$rating <- gsub("TV-PG|PG|TV-Y7-FV|TV-Y7","Older kids",as.character(amazonPublicCible$rating))
+amazonPublicCible$rating <- gsub("TV-MA|NR|UR|NC-17|R|UNRATED|NOT_RATE|AGES_18_|18+","Adults",as.character(amazonPublicCible$rating))
+amazonPublicCible$rating <- gsub("TV-Y|TV-G|ALL_AGES|ALL|G","Kids",as.character(amazonPublicCible$rating))
+
+# Catégories uniques -> 
+unique(na.omit(amazonPublicCible$rating))
+
+barplot(main="Audience visée des films selon la tranche d'âge, Amazon",
+        xlab="Tranche d'âge", 
+        ylab="Nombre de films", 
+        sort(table(amazonPublicCible$rating),
+             decreasing=FALSE))
+
+
 
 # Test de Shapiro Amazon
 barplot(table(amazon_movie$duration))
@@ -278,5 +283,43 @@ wilcox.test(amazon_movie$duration,netflix_movie$duration)
 # W = 2e+07, p-value <2e-16
 
 var.test(amazon_movie$duration,netflix_movie$duration,alternative = "greater")
+
+
+
+#====================================================================================================================================================================================
+#====================================================================================================================================================================================
+# ANALYSE Disney+
+
+# Transformation des durées des films en nombre (en enlevant le " min")
+
+disney_movie <- subset(disney_plus_titles,type =="Movie")
+
+disney_movie$duration <- gsub(" min","",as.character(disney_movie$duration))
+disney_movie$duration
+disney_movie$duration <- as.double(disney_movie$duration)
+summary(disney_movie$duration)
+
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#  1    44      85      72      98     183 
+
+#-----------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------
+#Audience visée des films
+
+disneyPublicCible <- disney_movie
+disneyPublicCible$rating <- gsub("TV-14|PG-13","Teens",as.character(disneyPublicCible$rating))
+disneyPublicCible$rating <- gsub("TV-PG|PG|TV-Y7-FV|TV-Y7","Older kids",as.character(disneyPublicCible$rating))
+disneyPublicCible$rating <- gsub("TV-Y|TV-G|G","Kids",as.character(disneyPublicCible$rating))
+disneyPublicCible$rating <- gsub("TV-MA|NR|UR|NC-17|R","Adults",as.character(disneyPublicCible$rating))
+
+
+# Catégories uniques -> on peut voir qu'il n'y a pas de film dont l'audience visée est des adultes, disney+ semble donc avoir pour public cible
+# les enfant et les adolescents principalement, cette plateforme ne souhaite pas de film qui ne s'adresseraient qu'aux personnes adultes. 
+unique(na.omit(disneyPublicCible$rating))
+
+barplot(main="Audience visée des films selon la tranche d'âge, Disney+",xlab="Tranche d'âge", ylab="Nombre de films", sort(table(disneyPublicCible$rating),decreasing=FALSE), col=c("green","orange","yellow"))
+
+
+
 
 
