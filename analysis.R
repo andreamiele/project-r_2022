@@ -322,4 +322,30 @@ barplot(main="Audience visée des films selon la tranche d'âge, Disney+",xlab="
 
 
 
+library(PCAmixdata)
+library(readr)
+tmdb_5000_movies <- read_csv("tmdb_5000_movies.csv", 
+                             col_types = cols(budget = col_number(), 
+                                              popularity = col_number(), release_date = col_date(format = "%Y-%m-%d"), 
+                                              revenue = col_number(), runtime = col_number(), 
+                                              vote_average = col_number(), vote_count = col_number()))
+tmdb_5000_movies$release_date =as.Date(tmdb_5000_movies$release_date,"%Y")
+
+
+usef_table = tmdb_5000_movies[,c(1,9,13,14,19,20)]
+usef_table$budget = as.numeric(usef_table$budget)
+usef_table$popularity = as.numeric(usef_table$popularity)
+usef_table$revenue = as.numeric(usef_table$revenue)
+usef_table$runtime = as.numeric(usef_table$runtime)
+usef_table$vote_average = as.numeric(usef_table$vote_average)
+usef_table$vote_count= as.numeric(usef_table$vote_count)
+
+class(usef_table$vote_average)
+usef_table$budget <-format(usef_table$budget,big.mark=",",scientific=FALSE)
+usef_table$popularity <-format(usef_table$popularity,big.mark=",",scientific=FALSE)
+usef_table$revenue <-format(usef_table$revenue,big.mark=",",scientific=FALSE)
+usef_table$vote_average <-format(usef_table$vote_average,big.mark=",",scientific=FALSE)
+
+ACP <- PCAmix(usef_table, graph=FALSE)
+
 
