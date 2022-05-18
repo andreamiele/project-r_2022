@@ -1,27 +1,12 @@
 #====================================================================================================================================================================================
 #====================================================================================================================================================================================
 # Imports
-install.packages("readr")
-install.packages("dplyr")
-install.packages("stringr")
-install.packages("ggplot2")
-install.packages("reshape2")
-install.packages("PCAmixdata")
-install.packages("FactoMineR")
-install.packages("factoextra")
-install.packages("missMDA")
-install.packages("corrplot")
 
-library(PCAmixdata)
 library(readr)
 library(dplyr)
 library(stringr)
 library(ggplot2)
 library(reshape2)
-library(FactoMineR)
-library(factoextra)
-library(missMDA)
-library(corrplot)
 
 netflix_titles <- read_csv("netflix_titles.csv", 
                            col_types = cols(date_added = col_date(format = "%B %d, %Y")))
@@ -337,8 +322,8 @@ barplot(main="Audience visée des films selon la tranche d'âge, Disney+",xlab="
 
 
 
-
-
+library(PCAmixdata)
+library(readr)
 tmdb_5000_movies <- read_csv("tmdb_5000_movies.csv", 
                              col_types = cols(budget = col_number(), 
                                               popularity = col_number(), release_date = col_date(format = "%Y-%m-%d"), 
@@ -347,7 +332,7 @@ tmdb_5000_movies <- read_csv("tmdb_5000_movies.csv",
 tmdb_5000_movies$release_date =as.Date(tmdb_5000_movies$release_date,"%Y")
 
 
-usef_table = tmdb_5000_movies[,c(1,9,11,13,14,19,20)]
+usef_table = tmdb_5000_movies[,c(1,9,13,14,19,20)]
 usef_table$budget = as.numeric(usef_table$budget)
 usef_table$popularity = as.numeric(usef_table$popularity)
 usef_table$revenue = as.numeric(usef_table$revenue)
@@ -356,84 +341,11 @@ usef_table$vote_average = as.numeric(usef_table$vote_average)
 usef_table$vote_count= as.numeric(usef_table$vote_count)
 
 class(usef_table$vote_average)
-typeof(usef_table$vote_average)
 usef_table$budget <-format(usef_table$budget,big.mark=",",scientific=FALSE)
 usef_table$popularity <-format(usef_table$popularity,big.mark=",",scientific=FALSE)
 usef_table$revenue <-format(usef_table$revenue,big.mark=",",scientific=FALSE)
 usef_table$vote_average <-format(usef_table$vote_average,big.mark=",",scientific=FALSE)
-usef_table <- data.frame(usef_table)
-typeof(usef_table)
 
-
-for (i in 1:length(usef_table$production_countries)){
-  y <- str_split(usef_table$production_countries[i],",", simplify = TRUE)
-  usef_table$production_countries[i] <- y[1,1]
-}
-coloration = data.frame(head(sort(table(usef_table$production_countries),decreasing=TRUE),n=4))
-for (i in 1:length(usef_table$production_countries)){
-  if (usef_table$production_countries[i] %in% coloration$Var1){
-    
-  }else{
-    usef_table$production_countries[i]="autre"
-  }
-}
-
-
-ACP <- PCA(data.frame(tmdb_5000_movies[,c(1,9,13,14,19,20)]), graph=FALSE)
-
-
-round(ACP$eig,digit=2)
-
-
-
-
-
-fviz_pca_ind(ACP2, col.ind=usef_table$production_countries, label="none", legend.title="Pays")
-
-
-
-
-barplot(ACP$eig[,1], main ="Eigen values", names.arg=1:nrow(ACP$eig))
-abline(h=1,col=2, lwd=2)
-
-# Eigenvalue Proportion Cumulative
-
-# dim 1       3.27       54.4         54
-# dim 2       1.15       19.1         74
-# dim 3       0.71       11.9         85
-# dim 4       0.45        7.6         93
-# dim 5       0.26        4.3         97
-# dim 6       0.16        2.7        100
-# D'après le critère de Kaiser, seuls les axes 1 et 2 sont intéressants à retenir. 
-
-# Le premier explique 54.4% de l'inertie, tandis que le deuxième explique seulement 19.1%
-
-#Ainsi en considérant le plan 1,2; on récupère 73.5 % de l'information. 
-fviz_pca_var(ACP)
-
-
-# COMMENTAIRES
-table(usef_table$production_countries)
-
-var <- get_pca_var(ACP)
-
-corrplot(var$cos2, is.corr=TRUE, method="shade")
-COL1(sequential = c("Oranges", "Purples", "Reds", "Blues", "Greens", 
-                    "Greys", "OrRd", "YlOrRd", "YlOrBr", "YlGn"), n = 200)
-mcor <- cor(na.omit(usef_table[,c(1,2,4,5,6,7)]))
-corrplot(mcor, type="lower", tl.col="black", method = "shade",col=COL1("OrRd"), title="Heatmap des corrélations entre les données quantitatives des films")
-
-ACP$ind
-
-
-
-
-table(usef_table$production_countries)
-
-
-fviz_contrib(ACP,choice="var", axes=1)
-fviz_contrib(ACP,choice="var", axes=2)
-
-
+ACP <- PCAmix(usef_table, graph=FALSE)
 
 
