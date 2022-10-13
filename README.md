@@ -21,3 +21,6 @@ The datasets are available in this archive: datasets.rar
 ## Usage
 
 ## Report
+You can find the report we did about this analysis </br>
+[French version](https://github.com/andreamiele/project-r_2022/blob/main/report/Report%20Project%20R%20fr.pdf) </br>
+[English version]() *in translation*
