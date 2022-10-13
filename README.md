@@ -2,6 +2,8 @@
 <h1 align="left">Project R</h1>
 
 ## About The Project
+### What indicators can explain the success of a film or series?
+
 
 For a few years, we can observe a generalization of the platforms of streaming in the homes. For example, Netflix has gone from 21 to 221 million subscribers in the space of 10 years. We can also note an increase in the number of platforms in recent years.
 With these strong increases, it seems interesting to us to question the content offered by these different platforms, in order to compare them on their catalog, and perhaps also to allow us to study the types of study the types of films/series that attract certain age groups.
